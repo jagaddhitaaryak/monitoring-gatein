@@ -497,11 +497,34 @@
         /* Analysis Tables */
         .gap-container-flex { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
         .gap-table-box { flex: 1; min-width: 300px; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
-        .analysis-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
-        .analysis-table th, .analysis-table td { padding: 6px; text-align: center; border: 1px solid #e2e8f0; }
         
-        .table-header-title { padding: 10px; margin: 0; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: white !important; }
+        /* --- UPDATE UKURAN FONT DI SINI --- */
+        .analysis-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-size: 0.95rem; /* DIPERBESAR: Sebelumnya 0.7rem */
+        }
         
+        .analysis-table th, .analysis-table td { 
+            padding: 10px 5px; /* Padding diperlega sedikit */
+            text-align: center; 
+            border: 1px solid #e2e8f0; 
+        }
+
+        /* KHUSUS ANGKA DI DALAM TABEL LEBIH TEBAL & BESAR */
+        .analysis-table td {
+            font-weight: 600; /* Tulisan di sel jadi agak tebal */
+            color: #0f172a;
+        }
+
+        /* Angka yang di-highlight (menggunakan span di JS) jadi lebih besar lagi */
+        .analysis-table td span {
+            font-size: 1.1rem; 
+        }
+        
+        .table-header-title { padding: 10px; margin: 0; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: white !important; }
+        
+        /* ... (lanjutan css theme colors biarkan tetap sama) ... */
         .theme-blue .table-header-title { background: #172554; } .theme-blue th { background: var(--blue-header); color:white; }
         .theme-orange .table-header-title { background: #7c2d12; } .theme-orange th { background: var(--orange-header); color:white; }
         .theme-green .table-header-title { background: #14532d; } .theme-green th { background: var(--green-header); color:white; }
@@ -1365,7 +1388,7 @@
                         <div class="theme-dark" style="margin-bottom: 20px;">
                             <div class="table-header-title">📊 UNIT BREAKDOWN : PLAN & NEXT DAY</div>
                             <div class="table-responsive">
-                                <table class="combined-table analysis-table" style="border-collapse: collapse; width: 100%; text-align: center; font-size: 0.85rem; background-color: white;">
+                                <table class="combined-table analysis-table" style="border-collapse: collapse; width: 100%; text-align: center; background-color: white;">
                                     <thead>
                                         <tr style="color: white;">
                                             <th rowspan="3" style="border: 1px solid #cbd5e1; background-color: #1e293b; width: 10%;">AREA</th>
@@ -1862,7 +1885,7 @@
             const selectedDateInput = document.getElementById('analysis-date').value;
             if(!selectedDateInput) return; 
 
-    // /// MULAI SISIPAN: LOGIKA 5 BOX STATISTIK BARU (FRANCO vs LOCO) ///
+        // /// MULAI SISIPAN: LOGIKA 5 BOX STATISTIK BARU (FRANCO vs LOCO) ///
         
         // Variabel Penampung
         let val_RegPlan = 0;   // Plan Reguler (Franco)
@@ -1910,8 +1933,12 @@
             });
         }
 
-        // --- FORMAT ANGKA (DIBAGI 1000 & DIBULATKAN) ---
-        const fmt = (n) => Math.round(n / 1000).toLocaleString('id-ID'); 
+        // // --- FORMAT ANGKA (DIBAGI 1000 & DIBULATKAN) ---
+        // const fmt = (n) => Math.round(n / 1000).toLocaleString('id-ID'); 
+
+        // KODE BARU (Benar: Menampilkan nilai asli dalam Kg)
+        // const fmt = (n) => Math.round(n).toLocaleString('id-ID');
+        const fmt = (n) => Math.round(n / 1000).toLocaleString('id-ID');
         
         // Render ke HTML
         document.getElementById('box-plan-reg').innerText = fmt(val_RegPlan);
@@ -2650,149 +2677,185 @@
         }
 
         // --- 12. EXPORT UTILS ---
-        function exportGapImage() { 
-            const container = document.getElementById('exportAreaContainer');
-            const originalShadow = container.style.boxShadow;
-            container.style.boxShadow = 'none';
-            container.style.padding = '40px'; 
-            html2canvas(container, { scale: 3 }).then(canvas => { 
-                const link = document.createElement('a');
-                link.download = 'ANALISIS_LOGISTIK_INDECO.jpg';
-                link.href = canvas.toDataURL('image/jpeg', 1.0);
-                link.click(); 
-                container.style.boxShadow = originalShadow;
-                container.style.padding = '25px';
-            }); 
-        }
+function exportGapImage() { 
+    const container = document.getElementById('exportAreaContainer');
+    const statsSource = document.querySelector('.stats-header-group');
+    let tempWrapper = null;
 
-// --- FITUR WHATSAPP SHARE (PERBAIKAN ANDROID) ---
+    // --- LOGIKA INJECT (RATA KIRI & PRESISI) ---
+    if (statsSource) {
+        tempWrapper = document.createElement('div');
+        
+        // Style Container
+        tempWrapper.style.backgroundColor = '#f8fafc';
+        tempWrapper.style.border = '1px solid #cbd5e1';
+        tempWrapper.style.borderRadius = '12px';
+        tempWrapper.style.padding = '20px';
+        tempWrapper.style.marginBottom = '25px';
+        tempWrapper.style.display = 'flex';
+        tempWrapper.style.flexDirection = 'column';
+        tempWrapper.style.alignItems = 'flex-start'; // <--- RATA KIRI
+        tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+        
+        // Style Judul
+        const title = document.createElement('div');
+        title.innerHTML = '<i class="fa-solid fa-chart-simple"></i> REKAP TONASE (KG)';
+        title.style.width = '100%';
+        title.style.textAlign = 'left'; // <--- RATA KIRI
+        title.style.color = '#334155';
+        title.style.fontWeight = '800';
+        title.style.fontSize = '0.9rem';
+        title.style.marginBottom = '15px';
+        title.style.paddingBottom = '10px';
+        title.style.borderBottom = '2px dashed #e2e8f0';
+        
+        // Clone Statistik
+        const statsClone = statsSource.cloneNode(true);
+        statsClone.style.margin = "0"; 
+        statsClone.style.width = "100%";
+        statsClone.style.display = "flex";
+        statsClone.style.justifyContent = "flex-start"; // <--- RATA KIRI
+        statsClone.style.flexWrap = "wrap";
+        statsClone.style.gap = "12px";
+
+        tempWrapper.appendChild(title);
+        tempWrapper.appendChild(statsClone);
+        container.insertBefore(tempWrapper, container.firstChild);
+    }
+    // -------------------------------------
+
+    const originalShadow = container.style.boxShadow;
+    const originalBg = container.style.background;
+    
+    container.style.boxShadow = 'none';
+    container.style.padding = '40px'; 
+    container.style.backgroundColor = '#ffffff';
+
+    html2canvas(container, { scale: 3 }).then(canvas => { 
+        const link = document.createElement('a');
+        link.download = 'ANALISIS_LOGISTIK_LENGKAP.jpg';
+        link.href = canvas.toDataURL('image/jpeg', 1.0);
+        link.click(); 
+        
+        container.style.boxShadow = originalShadow;
+        container.style.background = originalBg;
+        container.style.padding = '25px';
+        if (tempWrapper) container.removeChild(tempWrapper);
+    }); 
+}
+
 async function shareToWhatsApp(btnElement) {
-    // 1. Ambil Tanggal Analisa
+    // 1. Validasi Tanggal
     const dateVal = document.getElementById('analysis-date').value;
     if (!dateVal) { alert("Pilih tanggal analisa dulu!"); return; }
     
+    // Format Tanggal
     const dateObj = new Date(dateVal);
     const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dateStr = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
 
-    // 2. Fungsi Helper Ambil Data Tabel
-    const getTableVal = (tbodyId, colIndex) => {
-        const tbody = document.getElementById(tbodyId);
-        if(!tbody) return '0';
-        const totalRow = tbody.querySelector('tr:last-child'); 
-        if (!totalRow) return '0';
-        const cell = totalRow.children[colIndex];
-        return cell ? cell.innerText.replace(/\n/g, '').trim() : '0'; 
-    };
+    // 2. Siapkan Elemen DOM
+    const container = document.getElementById('exportAreaContainer');
+    const statsSource = document.querySelector('.stats-header-group'); 
+    let tempWrapper = null; 
 
-    // 3. Ambil Data
-    const p_plan = getTableVal('body-plan-today', 1);
-    const p_real = getTableVal('body-plan-today', 2);
-    const p_gap  = getTableVal('body-plan-today', 3);
+    // --- LOGIKA INJECT (RATA KIRI & PRESISI) ---
+    if (statsSource) {
+        // Buat Wrapper Utama (Kotak Abu-abu)
+        tempWrapper = document.createElement('div');
+        tempWrapper.id = 'temp-stats-injection';
+        
+        // Style agar rapi seperti "Card"
+        tempWrapper.style.backgroundColor = '#f8fafc'; // Abu-abu muda
+        tempWrapper.style.border = '1px solid #cbd5e1'; // Border halus
+        tempWrapper.style.borderRadius = '12px'; // Sudut melengkung
+        tempWrapper.style.padding = '20px'; // Padding lebih lega
+        tempWrapper.style.marginBottom = '25px'; // Jarak ke tabel bawah
+        tempWrapper.style.display = 'flex';
+        tempWrapper.style.flexDirection = 'column';
+        tempWrapper.style.alignItems = 'flex-start'; // <--- UBAH JADI RATA KIRI
+        tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+        
+        // Buat Judul
+        const title = document.createElement('div');
+        title.innerHTML = '<i class="fa-solid fa-chart-simple"></i> REKAP TONASE (KG)';
+        title.style.width = '100%';
+        title.style.textAlign = 'left'; // <--- JUDUL RATA KIRI
+        title.style.color = '#334155';
+        title.style.fontWeight = '800';
+        title.style.fontSize = '0.9rem';
+        title.style.marginBottom = '15px';
+        title.style.paddingBottom = '10px';
+        title.style.borderBottom = '2px dashed #e2e8f0'; // Garis pemisah full width
+        
+        // Clone Statistik
+        const statsClone = statsSource.cloneNode(true);
+        statsClone.style.margin = "0"; 
+        statsClone.style.width = "100%";
+        statsClone.style.display = "flex";
+        statsClone.style.justifyContent = "flex-start"; // <--- KARTU RATA KIRI
+        statsClone.style.flexWrap = "wrap";
+        statsClone.style.gap = "12px"; // Jarak antar kartu
 
-    const n_plan = getTableVal('body-next-day', 1);
-    const n_real = getTableVal('body-next-day', 2);
-    const n_gap  = getTableVal('body-next-day', 3);
+        // Rakit Elemen
+        tempWrapper.appendChild(title);
+        tempWrapper.appendChild(statsClone);
 
-    const t_plan = getTableVal('body-summary', 1);
-    const t_real = getTableVal('body-summary', 2);
-    const t_gap  = getTableVal('body-summary', 3);
+        // Masukkan ke Container Laporan
+        container.insertBefore(tempWrapper, container.firstChild);
+    }
+    // -----------------------------------------------------------
 
-    // 4. Susun Pesan
-    let msg = `Dear All,\n`;
-    msg += `Selamat Pagi\n\n`;
-    msg += `Berikut Update Delivery Plan ${dateStr}\n\n`;
+    let msg = `Dear All,\nSelamat Pagi\n\nBerikut Update Delivery Plan *${dateStr}*\n(Detail Tonase & Unit terlampir pada gambar)\n\nTerimakasih🙏`;
 
-    msg += `Planning,\n`;
-    msg += `Sampai Jam 17:00 : ${p_plan} Truck\n`;
-    msg += `Realisasi : ${p_real} Truck\n`;
-    msg += `GAP : ${p_gap} Truck\n\n`;
-
-    msg += `Next Day : ${n_plan} Truck\n`;
-    msg += `Realisasi : ${n_real} Truck\n`;
-    msg += `GAP : ${n_gap} Truck\n\n`;
-
-    msg += `-----\n`;
-    msg += `Total Plan & Next Day : ${t_plan} Truck\n`;
-    msg += `*Realisasi : ${t_real} Truck\n`;
-    msg += `*GAP : ${t_gap} Truck\n\n`;
-    msg += `Terimakasih🙏`;
-
-    // 5. Proses Screenshot & Share
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
     btnElement.disabled = true;
-
-    const container = document.getElementById('exportAreaContainer');
     
     try {
-        // Styling sementara agar hasil gambar bagus
         const originalShadow = container.style.boxShadow;
-        const originalPadding = container.style.padding;
+        const originalBg = container.style.background;
+        
+        // Set background putih mutlak saat difoto
         container.style.boxShadow = 'none';
-        container.style.padding = '20px'; 
-        container.style.backgroundColor = 'white';
+        container.style.padding = '30px'; 
+        container.style.backgroundColor = '#ffffff'; 
 
-        // Render Gambar
+        // AMBIL GAMBAR
         const canvas = await html2canvas(container, { scale: 2, useCORS: true });
         
-        // Kembalikan styling
+        // KEMBALIKAN STYLE
         container.style.boxShadow = originalShadow;
-        container.style.padding = originalPadding;
+        container.style.background = originalBg; 
+        container.style.padding = '25px';
+        
+        // Hapus elemen temp
+        if (tempWrapper) container.removeChild(tempWrapper);
 
         canvas.toBlob(async (blob) => {
-            const file = new File([blob], "Laporan_Logistik.png", { type: "image/png" });
+            const file = new File([blob], "Laporan_Logistik_Lengkap.png", { type: "image/png" });
 
-            // --- FIX KHUSUS ANDROID ---
-            // Kita paksa copy teks ke clipboard dulu, karena Android sering membuang teks saat kirim gambar
-            try {
-                await navigator.clipboard.writeText(msg);
-            } catch (err) {
-                console.log("Gagal auto-copy clipboard:", err);
-            }
+            try { await navigator.clipboard.writeText(msg); } catch (e) {}
 
-            // CEK 1: Share Native (HP Android / iPhone)
             if (navigator.share && navigator.canShare({ files: [file] })) {
                 try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Update Delivery',
-                        text: msg
-                    });
-                    
-                    // Beritahu user agar mereka tahu teks sudah dicopy
-                    alert("Teks telah disalin otomatis! Jika caption gambar kosong di WhatsApp, silahkan TEKAN LAMA kolom ketik & TEMPEL (PASTE).");
-                    
-                } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error("Share Error:", err);
-                        alert("Gagal membuka menu share.");
-                    }
-                } finally {
-                    btnElement.innerHTML = originalText;
-                    btnElement.disabled = false;
-                }
-            } 
-            // CEK 2: Laptop / PC (Fallback)
-            else {
+                    await navigator.share({ files: [file], title: 'Update Delivery', text: msg });
+                } catch (err) { if (err.name !== 'AbortError') alert("Gagal share native."); }
+            } else {
+                alert("✅ GAMBAR BERHASIL DISALIN!\nPaste di WhatsApp.");
                 try {
                     const item = new ClipboardItem({ "image/png": blob });
-                    await navigator.clipboard.write([item]); // Copy Gambar
-                    // Copy Teks juga (walau biasanya tertimpa, tapi kita buka WA link)
-                    alert("✅ GAMBAR DISALIN (MODE LAPTOP)!\n\nPaste (Ctrl+V) gambar di chat WhatsApp.");
-                    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-                } catch (err) {
-                    alert("Browser tidak support copy gambar otomatis.");
-                    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-                } finally {
-                    btnElement.innerHTML = originalText;
-                    btnElement.disabled = false;
-                }
+                    await navigator.clipboard.write([item]);
+                } catch (e) { window.open(canvas.toDataURL()); }
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
             }
+            btnElement.innerHTML = originalText;
+            btnElement.disabled = false;
         });
 
     } catch (error) {
         console.error("Error:", error);
+        if (tempWrapper && container.contains(tempWrapper)) container.removeChild(tempWrapper);
         alert("Terjadi kesalahan sistem.");
         btnElement.innerHTML = originalText;
         btnElement.disabled = false;
