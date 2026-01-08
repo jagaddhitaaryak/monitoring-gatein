@@ -694,6 +694,113 @@
 
 .box-purple { border-left: 3px solid #9333ea; }
 .box-purple .mini-icon { background: #faf5ff; color: #9333ea; }
+
+/* --- MOBILE FIRST OVERRIDES --- */
+@media (max-width: 768px) {
+    
+    /* 1. PERBAIKAN LAYOUT UTAMA & SIDEBAR (OVERLAY MODE) */
+    body { overflow-x: hidden; } /* Mencegah geser kanan-kiri yang tidak perlu */
+    
+    /* Sidebar sembunyi total di kiri layar */
+    .sidebar {
+        width: 260px !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+    }
+    
+    /* Class baru untuk memunculkan sidebar di mobile */
+    body.mobile-nav-active .sidebar {
+        transform: translateX(0);
+    }
+
+    /* Header & Konten selalu full width di mobile */
+    header { left: 0 !important; width: 100%; padding: 0 15px; }
+    .main-content { margin-left: 0 !important; padding: 80px 15px 60px 15px; }
+    footer { left: 0 !important; width: 100%; font-size: 0.65rem; }
+
+    /* Overlay Gelap saat sidebar muncul */
+    #mobile-backdrop {
+        display: none;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+    body.mobile-nav-active #mobile-backdrop { display: block; }
+
+    /* 2. TYPOGRAPHY & TOUCH TARGETS */
+    /* Mencegah zoom otomatis di iPhone saat ketik */
+    input, select, textarea { font-size: 16px !important; padding: 10px !important; }
+    
+    /* Tombol lebih mudah ditekan */
+    .btn, .nav-item { min-height: 44px; display: flex; align-items: center; }
+    
+    /* Judul lebih kecil agar muat */
+    .header-titles h1 { font-size: 0.85rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-titles h2 { font-size: 0.7rem; }
+
+    /* 3. TABEL RESPONSIF (SCROLLABLE) */
+    .table-responsive {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    /* Font tabel dikecilkan sedikit tapi tetap terbaca */
+    .main-data-table th, .main-data-table td {
+        font-size: 0.7rem !important;
+        padding: 8px 5px !important;
+        white-space: nowrap; /* Mencegah teks turun ke bawah agar rapi */
+    }
+    
+    /* Sticky Column untuk Checkbox & No (Agar tahu baris mana yg dipilih saat scroll) */
+    .main-data-table th:nth-child(1), .main-data-table td:nth-child(1) {
+        position: sticky; left: 0; background: #fff; z-index: 5;
+        border-right: 2px solid #e2e8f0;
+    }
+    .main-data-table th:nth-child(1) { background: #06887b !important; }
+
+    /* 4. FORM & MODAL */
+    /* Form input menjadi 1 kolom ke bawah */
+    .form-grid-mobile {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+    
+    /* Smart Filter Grid menjadi 2 kolom agar tidak terlalu panjang */
+    .sf-grid { grid-template-columns: 1fr 1fr; }
+    
+    /* Modal Full Width di Bawah (Bottom Sheet Style) */
+    .modal-box {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        position: fixed;
+        bottom: 0;
+        top: auto;
+        left: 0;
+        margin: 0;
+        max-height: 85vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    /* 5. ANALYSIS PAGE & STATS */
+    .analysis-control-bar { flex-direction: column; align-items: stretch; }
+    .stats-header-group { flex-wrap: wrap; }
+    .stat-mini { flex: 1 1 45%; } /* Statistik jadi 2 kolom */
+    
+    /* Tombol aksi di monitoring bar */
+    .analysis-control-bar > div {
+        flex-direction: column; width: 100%;
+    }
+    .analysis-control-bar button { width: 100%; margin-top: 5px; }
+
+    /* Login Page Responsive */
+    .login-card { width: 95%; height: auto; padding-bottom: 30px; }
+}
     </style>
 </head>
 <body class="sidebar-hidden">
@@ -759,6 +866,7 @@
     </div>
 
     <div id="app-container">
+        <div id="mobile-backdrop" onclick="toggleSidebar()"></div> 
         <div class="sidebar">
             <div class="sidebar-brand">
                 <svg class="brand-icon-svg" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1439,7 +1547,25 @@
         function formatNumber(num) { 
             return num ? num.toLocaleString('id-ID') : '0'; 
         }
-        function toggleSidebar() { document.body.classList.toggle('sidebar-hidden'); }
+        function toggleSidebar() {
+            // Cek apakah layar kecil (Mobile)
+            if (window.innerWidth <= 768) {
+                // Logika Mobile: Tambah/Hapus class 'mobile-nav-active'
+                document.body.classList.toggle('mobile-nav-active');
+            } else {
+                // Logika Desktop: Tambah/Hapus class 'sidebar-hidden' (Logic lama)
+                document.body.classList.toggle('sidebar-hidden');
+            }
+        }
+
+        // Tambahan: Tutup sidebar otomatis saat menu diklik (Khusus Mobile)
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    document.body.classList.remove('mobile-nav-active');
+                }
+            });
+        });
 
         // --- 3. AUTHENTICATION ---
         auth.onAuthStateChanged((user) => {
