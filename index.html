@@ -638,169 +638,187 @@
             .history-controls-right { justify-content: flex-end; }
         }
         /* --- CSS TAMBAHAN UNTUK 4 BOX STATISTIK ANALYSIS --- */
-.analysis-control-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap; /* Agar responsif */
-    background: #f8fafc;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #cbd5e1;
-    margin-bottom: 20px;
-}
+        .analysis-control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap; /* Agar responsif */
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            margin-bottom: 20px;
+        }
 
-/* Container untuk 4 Box Kecil */
-.stats-header-group {
-    display: flex;
-    gap: 10px;
-    flex: 1; /* Mengisi ruang kosong di tengah */
-    justify-content: center;
-}
+        /* Container untuk 4 Box Kecil */
+        .stats-header-group {
+            display: flex;
+            gap: 10px;
+            flex: 1; /* Mengisi ruang kosong di tengah */
+            justify-content: center;
+        }
 
-.stat-mini {
-    display: flex;
-    align-items: center;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 6px 12px;
-    min-width: 150px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
+        .stat-mini {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 6px 12px;
+            min-width: 150px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
 
-.mini-icon {
-    width: 32px; height: 32px;
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    margin-right: 10px;
-    font-size: 0.9rem;
-}
+        .mini-icon {
+            width: 32px; height: 32px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
 
-.mini-content { display: flex; flex-direction: column; line-height: 1.1; }
-.mini-label { font-size: 0.6rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
-.mini-value { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
+        .mini-content { display: flex; flex-direction: column; line-height: 1.1; }
+        .mini-label { font-size: 0.6rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .mini-value { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
 
-/* Warna Tema Box */
-.box-blue { border-left: 3px solid #2563eb; }
-.box-blue .mini-icon { background: #eff6ff; color: #2563eb; }
+        /* Warna Tema Box */
+        .box-blue { border-left: 3px solid #2563eb; }
+        .box-blue .mini-icon { background: #eff6ff; color: #2563eb; }
 
-.box-green { border-left: 3px solid #16a34a; }
-.box-green .mini-icon { background: #f0fdf4; color: #16a34a; }
+        .box-green { border-left: 3px solid #16a34a; }
+        .box-green .mini-icon { background: #f0fdf4; color: #16a34a; }
 
-.box-orange { border-left: 3px solid #ea580c; }
-.box-orange .mini-icon { background: #fff7ed; color: #ea580c; }
+        .box-orange { border-left: 3px solid #ea580c; }
+        .box-orange .mini-icon { background: #fff7ed; color: #ea580c; }
 
-.box-purple { border-left: 3px solid #9333ea; }
-.box-purple .mini-icon { background: #faf5ff; color: #9333ea; }
+        .box-purple { border-left: 3px solid #9333ea; }
+        .box-purple .mini-icon { background: #faf5ff; color: #9333ea; }
 
-/* --- MOBILE FIRST OVERRIDES --- */
-@media (max-width: 768px) {
-    
-    /* 1. PERBAIKAN LAYOUT UTAMA & SIDEBAR (OVERLAY MODE) */
-    body { overflow-x: hidden; } /* Mencegah geser kanan-kiri yang tidak perlu */
-    
-    /* Sidebar sembunyi total di kiri layar */
-    .sidebar {
-        width: 260px !important;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
-        box-shadow: 5px 0 15px rgba(0,0,0,0.2);
-    }
-    
-    /* Class baru untuk memunculkan sidebar di mobile */
-    body.mobile-nav-active .sidebar {
-        transform: translateX(0);
-    }
+        /* --- MOBILE FIRST OVERRIDES --- */
+        @media (max-width: 768px) {
+            
+            /* 1. PERBAIKAN LAYOUT UTAMA & SIDEBAR (OVERLAY MODE) */
+            body { overflow-x: hidden; } /* Mencegah geser kanan-kiri yang tidak perlu */
+            
+            /* Sidebar sembunyi total di kiri layar */
+            .sidebar {
+                width: 260px !important;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            }
+            
+            /* Class baru untuk memunculkan sidebar di mobile */
+            body.mobile-nav-active .sidebar {
+                transform: translateX(0);
+            }
 
-    /* Header & Konten selalu full width di mobile */
-    header { left: 0 !important; width: 100%; padding: 0 15px; }
-    .main-content { margin-left: 0 !important; padding: 80px 15px 60px 15px; }
-    footer { left: 0 !important; width: 100%; font-size: 0.65rem; }
+            /* Header & Konten selalu full width di mobile */
+            header { left: 0 !important; width: 100%; padding: 0 15px; }
+            .main-content { margin-left: 0 !important; padding: 80px 15px 60px 15px; }
+            footer { left: 0 !important; width: 100%; font-size: 0.65rem; }
 
-    /* Overlay Gelap saat sidebar muncul */
-    #mobile-backdrop {
-        display: none;
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5); z-index: 999;
-        backdrop-filter: blur(2px);
-    }
-    body.mobile-nav-active #mobile-backdrop { display: block; }
+            /* Overlay Gelap saat sidebar muncul */
+            #mobile-backdrop {
+                display: none;
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 999;
+                backdrop-filter: blur(2px);
+            }
+            body.mobile-nav-active #mobile-backdrop { display: block; }
 
-    /* 2. TYPOGRAPHY & TOUCH TARGETS */
-    /* Mencegah zoom otomatis di iPhone saat ketik */
-    input, select, textarea { font-size: 16px !important; padding: 10px !important; }
-    
-    /* Tombol lebih mudah ditekan */
-    .btn, .nav-item { min-height: 44px; display: flex; align-items: center; }
-    
-    /* Judul lebih kecil agar muat */
-    .header-titles h1 { font-size: 0.85rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .header-titles h2 { font-size: 0.7rem; }
+            /* 2. TYPOGRAPHY & TOUCH TARGETS */
+            /* Mencegah zoom otomatis di iPhone saat ketik */
+            input, select, textarea { font-size: 16px !important; padding: 10px !important; }
+            
+            /* Tombol lebih mudah ditekan */
+            .btn, .nav-item { min-height: 44px; display: flex; align-items: center; }
+            
+            /* Judul lebih kecil agar muat */
+            .header-titles h1 { font-size: 0.85rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .header-titles h2 { font-size: 0.7rem; }
 
-    /* 3. TABEL RESPONSIF (SCROLLABLE) */
-    .table-responsive {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-    
-    /* Font tabel dikecilkan sedikit tapi tetap terbaca */
-    .main-data-table th, .main-data-table td {
-        font-size: 0.7rem !important;
-        padding: 8px 5px !important;
-        white-space: nowrap; /* Mencegah teks turun ke bawah agar rapi */
-    }
-    
-    /* Sticky Column untuk Checkbox & No (Agar tahu baris mana yg dipilih saat scroll) */
-    .main-data-table th:nth-child(1), .main-data-table td:nth-child(1) {
-        position: sticky; left: 0; background: #fff; z-index: 5;
-        border-right: 2px solid #e2e8f0;
-    }
-    .main-data-table th:nth-child(1) { background: #06887b !important; }
+            /* 3. TABEL RESPONSIF (SCROLLABLE) */
+            .table-responsive {
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            
+            /* Font tabel dikecilkan sedikit tapi tetap terbaca */
+            .main-data-table th, .main-data-table td {
+                font-size: 0.7rem !important;
+                padding: 8px 5px !important;
+                white-space: nowrap; /* Mencegah teks turun ke bawah agar rapi */
+            }
+            
+            /* Sticky Column untuk Checkbox & No (Agar tahu baris mana yg dipilih saat scroll) */
+            .main-data-table th:nth-child(1), .main-data-table td:nth-child(1) {
+                position: sticky; left: 0; background: #fff; z-index: 5;
+                border-right: 2px solid #e2e8f0;
+            }
+            .main-data-table th:nth-child(1) { background: #06887b !important; }
 
-    /* 4. FORM & MODAL */
-    /* Form input menjadi 1 kolom ke bawah */
-    .form-grid-mobile {
-        grid-template-columns: 1fr !important;
-        gap: 10px !important;
-    }
-    
-    /* Smart Filter Grid menjadi 2 kolom agar tidak terlalu panjang */
-    .sf-grid { grid-template-columns: 1fr 1fr; }
-    
-    /* Modal Full Width di Bawah (Bottom Sheet Style) */
-    .modal-box {
-        width: 100%;
-        max-width: 100%;
-        border-radius: 20px 20px 0 0;
-        position: fixed;
-        bottom: 0;
-        top: auto;
-        left: 0;
-        margin: 0;
-        max-height: 85vh;
-        overflow-y: auto;
-        animation: slideUp 0.3s ease-out;
-    }
-    
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            /* 4. FORM & MODAL */
+            /* Form input menjadi 1 kolom ke bawah */
+            .form-grid-mobile {
+                grid-template-columns: 1fr !important;
+                gap: 10px !important;
+            }
+            
+            /* Smart Filter Grid menjadi 2 kolom agar tidak terlalu panjang */
+            .sf-grid { grid-template-columns: 1fr 1fr; }
+            
+            /* Modal Full Width di Bawah (Bottom Sheet Style) */
+            .modal-box {
+                width: 100%;
+                max-width: 100%;
+                border-radius: 20px 20px 0 0;
+                position: fixed;
+                bottom: 0;
+                top: auto;
+                left: 0;
+                margin: 0;
+                max-height: 85vh;
+                overflow-y: auto;
+                animation: slideUp 0.3s ease-out;
+            }
+            
+            @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-    /* 5. ANALYSIS PAGE & STATS */
-    .analysis-control-bar { flex-direction: column; align-items: stretch; }
-    .stats-header-group { flex-wrap: wrap; }
-    .stat-mini { flex: 1 1 45%; } /* Statistik jadi 2 kolom */
-    
-    /* Tombol aksi di monitoring bar */
-    .analysis-control-bar > div {
-        flex-direction: column; width: 100%;
-    }
-    .analysis-control-bar button { width: 100%; margin-top: 5px; }
+            /* 5. ANALYSIS PAGE & STATS */
+            .analysis-control-bar { flex-direction: column; align-items: stretch; }
+            .stats-header-group { flex-wrap: wrap; }
+            .stat-mini { flex: 1 1 45%; } /* Statistik jadi 2 kolom */
+            
+            /* Tombol aksi di monitoring bar */
+            .analysis-control-bar > div {
+                flex-direction: column; width: 100%;
+            }
+            .analysis-control-bar button { width: 100%; margin-top: 5px; }
 
-    /* Login Page Responsive */
-    .login-card { width: 95%; height: auto; padding-bottom: 30px; }
-}
+            /* Login Page Responsive */
+            .login-card { width: 95%; height: auto; padding-bottom: 30px; }
+        }
+
+        /* --- TAMBAHAN CSS UNTUK 5 KARTU --- */
+        .box-teal { border-left: 3px solid #06b6d4; }
+        .box-teal .mini-icon { background: #ecfeff; color: #06b6d4; }
+
+        /* Pemisah Antara Franco & Loco */
+        .stats-divider {
+            width: 1px;
+            background-color: #cbd5e1;
+            margin: 0 10px;
+            align-self: stretch; /* Agar tinggi mengikuti parent */
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            /* Sembunyikan garis di HP, ganti jadi jarak */
+            .stats-divider { display: none; margin: 10px 0; }
+        }
     </style>
 </head>
 <body class="sidebar-hidden">
@@ -1263,34 +1281,44 @@
     </div>
 
     <div class="stats-header-group">
-        <div class="stat-mini box-blue" title="Plan Delivery (Non Ambil Sendiri)">
-            <div class="mini-icon"><i class="fa-solid fa-truck-fast"></i></div>
+        <div class="stat-mini box-blue" title="Plan Delivery Reguler (Non Next Day)">
+            <div class="mini-icon"><i class="fa-solid fa-truck"></i></div>
             <div class="mini-content">
-                <span class="mini-label">TOTAL PLANNING</span>
-                <span class="mini-value" id="box-plan-non">0</span>
+                <span class="mini-label">PLANNING</span>
+                <span class="mini-value" id="box-plan-reg">0</span>
             </div>
         </div>
 
-        <div class="stat-mini box-green" title="Actual Gate In (Non Ambil Sendiri)">
-            <div class="mini-icon"><i class="fa-solid fa-check-double"></i></div>
+        <div class="stat-mini box-teal" title="Plan Cargo Next Day">
+            <div class="mini-icon"><i class="fa-solid fa-clock"></i></div>
             <div class="mini-content">
-                <span class="mini-label">TOTAL ACTUAL</span>
-                <span class="mini-value" id="box-act-non">0</span>
+                <span class="mini-label">NEXT DAY</span>
+                <span class="mini-value" id="box-plan-nd">0</span>
             </div>
         </div>
+
+        <div class="stat-mini box-green" title="Realisasi Total (Reguler + Next Day)">
+            <div class="mini-icon"><i class="fa-solid fa-check-double"></i></div>
+            <div class="mini-content">
+                <span class="mini-label">REALISASI (FRANCO)</span>
+                <span class="mini-value" id="box-act-total">0</span>
+            </div>
+        </div>
+
+        <div class="stats-divider"></div>
 
         <div class="stat-mini box-orange" title="Plan Ambil Sendiri">
             <div class="mini-icon"><i class="fa-solid fa-people-carry-box"></i></div>
             <div class="mini-content">
-                <span class="mini-label">AMBIL SENDIRI (PLAN)</span>
+                <span class="mini-label">AMBIL SENDIRI</span>
                 <span class="mini-value" id="box-plan-self">0</span>
             </div>
         </div>
 
-        <div class="stat-mini box-purple" title="Actual Gate In (Ambil Sendiri)">
+        <div class="stat-mini box-purple" title="Actual Ambil Sendiri">
             <div class="mini-icon"><i class="fa-solid fa-clipboard-check"></i></div>
             <div class="mini-content">
-                <span class="mini-label">AMBIL SENDIRI (ACT)</span>
+                <span class="mini-label">REALISASI (LOCO)</span>
                 <span class="mini-value" id="box-act-self">0</span>
             </div>
         </div>
@@ -1834,47 +1862,65 @@
             const selectedDateInput = document.getElementById('analysis-date').value;
             if(!selectedDateInput) return; 
 
-            // /// MULAI SISIPAN: LOGIKA 4 BOX STATISTIK BARU ///
-    let bPN = 0, bAN = 0, bPS = 0, bAS = 0; 
-    
-    if(typeof allShipments !== 'undefined' && allShipments.length > 0) {
-        allShipments.forEach(itm => {
-            // 1. Filter Status Cancelled
-            if(itm.status === 'Cancelled') return;
-            
-            // 2. Filter Harus Tanggal Terpilih
-            if(itm.date !== selectedDateInput) return;
+    // /// MULAI SISIPAN: LOGIKA 5 BOX STATISTIK BARU (FRANCO vs LOCO) ///
+        
+        // Variabel Penampung
+        let val_RegPlan = 0;   // Plan Reguler (Franco)
+        let val_NextDay = 0;   // Plan Next Day (Franco)
+        let val_RealFranco = 0; // Realisasi Gate In (Reguler + Next Day)
+        
+        let val_SelfPlan = 0;  // Plan Ambil Sendiri
+        let val_SelfReal = 0;  // Realisasi Ambil Sendiri
+        
+        if(typeof allShipments !== 'undefined' && allShipments.length > 0) {
+            allShipments.forEach(itm => {
+                // 1. Filter Status Cancelled
+                if(itm.status === 'Cancelled') return;
+                
+                // 2. Filter Harus Tanggal Terpilih
+                if(itm.date !== selectedDateInput) return;
 
-            // 3. FILTER BARU: ABAIKAN JIKA ADA CATATAN "NEXT DAY"
-            // Kita hanya ambil Plan Delivery murni hari ini
-            let note = (itm.catatan || "").toUpperCase();
-            if(note.includes("NEXT DAY")) return; 
+                // Ambil Data
+                let qty = parseFloat(itm.qty || 0);
+                let note = (itm.catatan || "").toUpperCase();
+                let areaCheck = (itm.area || "").toUpperCase();
+                let isGateIn = (itm.status === 'Gate In');
+                
+                // Cek Tipe: Ambil Sendiri (LOCO) atau Delivery (FRANCO)
+                let isSelf = areaCheck.includes("AMBIL SENDIRI") || note.includes("AMBIL SENDIRI");
+                let isNext = note.includes("NEXT DAY");
 
-            // --- Logika Penjumlahan ---
-            let qty = parseFloat(itm.qty || 0);
-            let areaCheck = (itm.area || "").toUpperCase();
-            let isGateIn = (itm.status === 'Gate In');
-            let isSelf = areaCheck.includes("AMBIL SENDIRI");
+                if(isSelf) {
+                    // --- LOGIKA LOCO ---
+                    val_SelfPlan += qty;
+                    if(isGateIn) val_SelfReal += qty;
+                } else {
+                    // --- LOGIKA FRANCO ---
+                    
+                    // Hitung Realisasi (Gabungan Reguler + Next Day)
+                    if(isGateIn) val_RealFranco += qty;
 
-            if(isSelf) {
-                bPS += qty; 
-                if(isGateIn) bAS += qty; 
-            } else {
-                bPN += qty; 
-                if(isGateIn) bAN += qty; 
-            }
-        });
-    }
+                    // Hitung Planning (Dipisah: Reguler vs Next Day)
+                    if(isNext) {
+                        val_NextDay += qty;
+                    } else {
+                        val_RegPlan += qty;
+                    }
+                }
+            });
+        }
 
-    // --- FORMAT ANGKA (DIBAGI 1000 & DIBULATKAN) ---
-    // Contoh: 4.605.677 -> 4.606
-    const fmt = (n) => Math.round(n / 1000).toLocaleString('id-ID'); 
-    
-    document.getElementById('box-plan-non').innerText = fmt(bPN);
-    document.getElementById('box-act-non').innerText = fmt(bAN);
-    document.getElementById('box-plan-self').innerText = fmt(bPS);
-    document.getElementById('box-act-self').innerText = fmt(bAS);
-    // /// AKHIR SISIPAN ///
+        // --- FORMAT ANGKA (DIBAGI 1000 & DIBULATKAN) ---
+        const fmt = (n) => Math.round(n / 1000).toLocaleString('id-ID'); 
+        
+        // Render ke HTML
+        document.getElementById('box-plan-reg').innerText = fmt(val_RegPlan);
+        document.getElementById('box-plan-nd').innerText = fmt(val_NextDay);
+        document.getElementById('box-act-total').innerText = fmt(val_RealFranco);
+        
+        document.getElementById('box-plan-self').innerText = fmt(val_SelfPlan);
+        document.getElementById('box-act-self').innerText = fmt(val_SelfReal);
+        // /// AKHIR SISIPAN ///
 
             // Logic start
             const dateObj = new Date(selectedDateInput);
@@ -2619,7 +2665,7 @@
             }); 
         }
 
-// --- FITUR WHATSAPP SHARE (HYBRID: SUPPORT HP & LAPTOP) ---
+// --- FITUR WHATSAPP SHARE (PERBAIKAN ANDROID) ---
 async function shareToWhatsApp(btnElement) {
     // 1. Ambil Tanggal Analisa
     const dateVal = document.getElementById('analysis-date').value;
@@ -2629,7 +2675,7 @@ async function shareToWhatsApp(btnElement) {
     const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dateStr = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
 
-    // 2. Fungsi Helper
+    // 2. Fungsi Helper Ambil Data Tabel
     const getTableVal = (tbodyId, colIndex) => {
         const tbody = document.getElementById(tbodyId);
         if(!tbody) return '0';
@@ -2672,7 +2718,7 @@ async function shareToWhatsApp(btnElement) {
     msg += `*GAP : ${t_gap} Truck\n\n`;
     msg += `Terimakasih🙏`;
 
-    // 5. Proses Screenshot
+    // 5. Proses Screenshot & Share
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
     btnElement.disabled = true;
@@ -2680,25 +2726,32 @@ async function shareToWhatsApp(btnElement) {
     const container = document.getElementById('exportAreaContainer');
     
     try {
-        // Styling sementara
+        // Styling sementara agar hasil gambar bagus
         const originalShadow = container.style.boxShadow;
         const originalPadding = container.style.padding;
         container.style.boxShadow = 'none';
-        container.style.padding = '20px'; // Padding lebih kecil agar pas di HP
+        container.style.padding = '20px'; 
         container.style.backgroundColor = 'white';
 
+        // Render Gambar
         const canvas = await html2canvas(container, { scale: 2, useCORS: true });
         
+        // Kembalikan styling
         container.style.boxShadow = originalShadow;
         container.style.padding = originalPadding;
 
         canvas.toBlob(async (blob) => {
-            // Buat File Object dari Blob
             const file = new File([blob], "Laporan_Logistik.png", { type: "image/png" });
 
-            // --- CABANG LOGIKA: HP VS LAPTOP ---
-            
-            // CEK 1: Apakah Browser mendukung Fitur Share Bawaan? (Biasanya HP)
+            // --- FIX KHUSUS ANDROID ---
+            // Kita paksa copy teks ke clipboard dulu, karena Android sering membuang teks saat kirim gambar
+            try {
+                await navigator.clipboard.writeText(msg);
+            } catch (err) {
+                console.log("Gagal auto-copy clipboard:", err);
+            }
+
+            // CEK 1: Share Native (HP Android / iPhone)
             if (navigator.share && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
@@ -2706,7 +2759,10 @@ async function shareToWhatsApp(btnElement) {
                         title: 'Update Delivery',
                         text: msg
                     });
-                    // Jika sukses share, tidak perlu alert apa-apa, karena user sudah masuk ke WA
+                    
+                    // Beritahu user agar mereka tahu teks sudah dicopy
+                    alert("Teks telah disalin otomatis! Jika caption gambar kosong di WhatsApp, silahkan TEKAN LAMA kolom ketik & TEMPEL (PASTE).");
+                    
                 } catch (err) {
                     if (err.name !== 'AbortError') {
                         console.error("Share Error:", err);
@@ -2717,11 +2773,12 @@ async function shareToWhatsApp(btnElement) {
                     btnElement.disabled = false;
                 }
             } 
-            // CEK 2: Jika di Laptop (Tidak support native share), pakai cara Clipboard lama
+            // CEK 2: Laptop / PC (Fallback)
             else {
                 try {
                     const item = new ClipboardItem({ "image/png": blob });
-                    await navigator.clipboard.write([item]);
+                    await navigator.clipboard.write([item]); // Copy Gambar
+                    // Copy Teks juga (walau biasanya tertimpa, tapi kita buka WA link)
                     alert("✅ GAMBAR DISALIN (MODE LAPTOP)!\n\nPaste (Ctrl+V) gambar di chat WhatsApp.");
                     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
                 } catch (err) {
