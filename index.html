@@ -2754,64 +2754,107 @@ async function shareToWhatsApp(btnElement) {
     const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dateStr = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
 
-    // 2. Siapkan Elemen DOM
+    // --- BAGIAN 1: AMBIL DATA UNTUK PESAN WHATSAPP (TRUCK UNIT) ---
+    
+    // Helper untuk ambil data dari baris TOTAL (baris terakhir di body tabel)
+    const getTableVal = (tbodyId, colIndex) => {
+        const tbody = document.getElementById(tbodyId);
+        if(!tbody) return '0';
+        const totalRow = tbody.querySelector('tr:last-child'); 
+        if (!totalRow) return '0';
+        const cell = totalRow.children[colIndex];
+        return cell ? cell.innerText.replace(/\n/g, '').trim() : '0'; 
+    };
+
+    // Ambil Data Unit Truck
+    const p_plan = getTableVal('body-plan-today', 1); // Col 1 = Plan
+    const p_real = getTableVal('body-plan-today', 2); // Col 2 = Realz
+    const p_gap  = getTableVal('body-plan-today', 3); // Col 3 = Gap
+
+    const n_plan = getTableVal('body-next-day', 1);
+    const n_real = getTableVal('body-next-day', 2);
+    const n_gap  = getTableVal('body-next-day', 3);
+
+    const t_plan = getTableVal('body-summary', 1);
+    const t_real = getTableVal('body-summary', 2);
+    const t_gap  = getTableVal('body-summary', 3);
+
+    // Susun Template Pesan Sesuai Request
+    let msg = `Dear All,\n`;
+    msg += `Selamat Pagi\n\n`;
+    msg += `Berikut Update Delivery Plan ${dateStr}\n\n`;
+
+    msg += `Planning,\n`;
+    msg += `Sampai Jam 17:00 : ${p_plan} Truck\n`;
+    msg += `Realisasi : ${p_real} Truck\n`;
+    msg += `GAP : ${p_gap} Truck\n\n`;
+
+    msg += `Next Day : ${n_plan} Truck\n`;
+    msg += `Realisasi : ${n_real} Truck\n`;
+    msg += `GAP : ${n_gap} Truck\n\n`;
+
+    msg += `-----\n`;
+    msg += `Total Plan & Next Day : ${t_plan} Truck\n`;
+    msg += `Realisasi : ${t_real} Truck\n`;
+    msg += `GAP : ${t_gap} Truck\n\n`;
+
+    msg += `Terimakasih.`;
+
+    // --- BAGIAN 2: LOGIKA GAMBAR (INJECT TONASE KE GAMBAR) ---
+    
     const container = document.getElementById('exportAreaContainer');
     const statsSource = document.querySelector('.stats-header-group'); 
     let tempWrapper = null; 
+    
+    // Simpan tombol loading state
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
+    btnElement.disabled = true;
 
-    // --- LOGIKA INJECT (RATA KIRI & PRESISI) ---
     if (statsSource) {
-        // Buat Wrapper Utama (Kotak Abu-abu)
+        // Buat Wrapper Utama
         tempWrapper = document.createElement('div');
         tempWrapper.id = 'temp-stats-injection';
         
-        // Style agar rapi seperti "Card"
-        tempWrapper.style.backgroundColor = '#f8fafc'; // Abu-abu muda
-        tempWrapper.style.border = '1px solid #cbd5e1'; // Border halus
-        tempWrapper.style.borderRadius = '12px'; // Sudut melengkung
-        tempWrapper.style.padding = '20px'; // Padding lebih lega
-        tempWrapper.style.marginBottom = '25px'; // Jarak ke tabel bawah
+        // Style agar Rata Kiri & Presisi
+        tempWrapper.style.backgroundColor = '#f8fafc';
+        tempWrapper.style.border = '1px solid #cbd5e1';
+        tempWrapper.style.borderRadius = '12px';
+        tempWrapper.style.padding = '20px';
+        tempWrapper.style.marginBottom = '25px';
         tempWrapper.style.display = 'flex';
         tempWrapper.style.flexDirection = 'column';
-        tempWrapper.style.alignItems = 'flex-start'; // <--- UBAH JADI RATA KIRI
+        tempWrapper.style.alignItems = 'flex-start'; // RATA KIRI
         tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
         
         // Buat Judul
         const title = document.createElement('div');
         title.innerHTML = '<i class="fa-solid fa-chart-simple"></i> REKAP TONASE (KG)';
         title.style.width = '100%';
-        title.style.textAlign = 'left'; // <--- JUDUL RATA KIRI
+        title.style.textAlign = 'left'; // RATA KIRI
         title.style.color = '#334155';
         title.style.fontWeight = '800';
         title.style.fontSize = '0.9rem';
         title.style.marginBottom = '15px';
         title.style.paddingBottom = '10px';
-        title.style.borderBottom = '2px dashed #e2e8f0'; // Garis pemisah full width
+        title.style.borderBottom = '2px dashed #e2e8f0';
         
         // Clone Statistik
         const statsClone = statsSource.cloneNode(true);
         statsClone.style.margin = "0"; 
         statsClone.style.width = "100%";
         statsClone.style.display = "flex";
-        statsClone.style.justifyContent = "flex-start"; // <--- KARTU RATA KIRI
+        statsClone.style.justifyContent = "flex-start"; // RATA KIRI
         statsClone.style.flexWrap = "wrap";
-        statsClone.style.gap = "12px"; // Jarak antar kartu
+        statsClone.style.gap = "12px";
 
-        // Rakit Elemen
         tempWrapper.appendChild(title);
         tempWrapper.appendChild(statsClone);
 
-        // Masukkan ke Container Laporan
+        // Masukkan ke Container
         container.insertBefore(tempWrapper, container.firstChild);
     }
-    // -----------------------------------------------------------
 
-    let msg = `Dear All,\nSelamat Pagi\n\nBerikut Update Delivery Plan *${dateStr}*\n(Detail Tonase & Unit terlampir pada gambar)\n\nTerimakasih🙏`;
-
-    const originalText = btnElement.innerHTML;
-    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
-    btnElement.disabled = true;
-    
     try {
         const originalShadow = container.style.boxShadow;
         const originalBg = container.style.background;
@@ -2824,7 +2867,7 @@ async function shareToWhatsApp(btnElement) {
         // AMBIL GAMBAR
         const canvas = await html2canvas(container, { scale: 2, useCORS: true });
         
-        // KEMBALIKAN STYLE
+        // KEMBALIKAN STYLE SEPERTI SEMULA
         container.style.boxShadow = originalShadow;
         container.style.background = originalBg; 
         container.style.padding = '25px';
@@ -2835,14 +2878,16 @@ async function shareToWhatsApp(btnElement) {
         canvas.toBlob(async (blob) => {
             const file = new File([blob], "Laporan_Logistik_Lengkap.png", { type: "image/png" });
 
+            // COPY TEXT KE CLIPBOARD
             try { await navigator.clipboard.writeText(msg); } catch (e) {}
 
+            // SHARE LOGIC
             if (navigator.share && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({ files: [file], title: 'Update Delivery', text: msg });
                 } catch (err) { if (err.name !== 'AbortError') alert("Gagal share native."); }
             } else {
-                alert("✅ GAMBAR BERHASIL DISALIN!\nPaste di WhatsApp.");
+                alert("✅ GAMBAR BERHASIL DISALIN!\nPaste di WhatsApp (Caption sudah dicopy otomatis).");
                 try {
                     const item = new ClipboardItem({ "image/png": blob });
                     await navigator.clipboard.write([item]);
