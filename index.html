@@ -2679,56 +2679,136 @@
         // --- 12. EXPORT UTILS ---
 function exportGapImage() { 
     const container = document.getElementById('exportAreaContainer');
-    const statsSource = document.querySelector('.stats-header-group');
-    let tempWrapper = null;
+    
+    // --- AMBIL DATA ---
+    const val_Reg = document.getElementById('box-plan-reg').innerText;
+    const val_ND = document.getElementById('box-plan-nd').innerText;
+    const val_Real = document.getElementById('box-act-total').innerText;
+    const val_SelfPlan = document.getElementById('box-plan-self').innerText;
+    const val_SelfReal = document.getElementById('box-act-self').innerText;
 
-    // --- LOGIKA INJECT (RATA KIRI & PRESISI) ---
-    if (statsSource) {
+    // --- DOM VARS ---
+    let tempWrapper = null;
+    let ambilBox = null;
+    let flexWrapper = null;
+    let parentAmbil = null;
+    let originalAmbilWidth = ''; 
+    let originalAmbilFlex = '';
+    let originalAmbilHeight = ''; // Simpan tinggi asli
+
+    if (container) {
+        // 1. DETEKSI UKURAN TABEL ATAS
+        const topTables = container.querySelectorAll('.gap-table-box');
+        let targetWidthLeft = '50%'; 
+        let targetWidthRight = '50%';
+
+        if (topTables.length >= 2) {
+            targetWidthLeft = topTables[0].offsetWidth + 'px';
+            targetWidthRight = topTables[1].offsetWidth + 'px';
+        } else if (topTables.length === 1) {
+            targetWidthLeft = topTables[0].offsetWidth + 'px';
+            targetWidthRight = targetWidthLeft;
+        }
+
+        // 2. BUAT WIDGET REKAP (LEBIH COMPACT AGAR TINGGI TIDAK JOMPLANG)
         tempWrapper = document.createElement('div');
-        
-        // Style Container
-        tempWrapper.style.backgroundColor = '#f8fafc';
-        tempWrapper.style.border = '1px solid #cbd5e1';
-        tempWrapper.style.borderRadius = '12px';
-        tempWrapper.style.padding = '20px';
-        tempWrapper.style.marginBottom = '25px';
+        tempWrapper.style.boxSizing = 'border-box';
+        tempWrapper.style.backgroundColor = '#1e3a8a'; 
+        tempWrapper.style.borderRadius = '8px';
+        // Padding diperkecil agar tidak terlalu tinggi
+        tempWrapper.style.padding = '10px 15px'; 
+        tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+        tempWrapper.style.border = '1px solid rgba(255,255,255,0.1)';
+        tempWrapper.style.color = '#ffffff';
+        tempWrapper.style.fontFamily = "'Inter', sans-serif";
+        tempWrapper.style.width = targetWidthRight; 
+        tempWrapper.style.flex = 'none'; 
         tempWrapper.style.display = 'flex';
         tempWrapper.style.flexDirection = 'column';
-        tempWrapper.style.alignItems = 'flex-start'; // <--- RATA KIRI
-        tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-        
-        // Style Judul
-        const title = document.createElement('div');
-        title.innerHTML = '<i class="fa-solid fa-chart-simple"></i> REKAP TONASE (KG)';
-        title.style.width = '100%';
-        title.style.textAlign = 'left'; // <--- RATA KIRI
-        title.style.color = '#334155';
-        title.style.fontWeight = '800';
-        title.style.fontSize = '0.9rem';
-        title.style.marginBottom = '15px';
-        title.style.paddingBottom = '10px';
-        title.style.borderBottom = '2px dashed #e2e8f0';
-        
-        // Clone Statistik
-        const statsClone = statsSource.cloneNode(true);
-        statsClone.style.margin = "0"; 
-        statsClone.style.width = "100%";
-        statsClone.style.display = "flex";
-        statsClone.style.justifyContent = "flex-start"; // <--- RATA KIRI
-        statsClone.style.flexWrap = "wrap";
-        statsClone.style.gap = "12px";
 
-        tempWrapper.appendChild(title);
-        tempWrapper.appendChild(statsClone);
-        container.insertBefore(tempWrapper, container.firstChild);
+        tempWrapper.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 5px;">
+                <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">⚖️ REKAP TONASE (KG)</span>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.65rem; flex: 1;">
+                <thead>
+                    <tr style="color: rgba(255,255,255,0.5);">
+                        <th style="text-align: left; padding: 2px 0; font-weight: 500;">KATEGORI</th>
+                        <th style="text-align: right; padding: 2px 15px 2px 0; font-weight: 500;">PLAN</th>
+                        <th style="text-align: right; padding: 2px 0; font-weight: 500;">REALISASI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Franco (Reg)</td>
+                        <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_Reg}</td>
+                        <td rowspan="2" style="padding: 2px 0; text-align: right; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                            <span style="font-size: 0.8rem; font-weight: 700; color: #a5f3fc;">${val_Real}</span>
+                            <div style="font-size: 0.5rem; opacity: 0.6; line-height: 1;">(Total)</div>
+                        </td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Next Day</td>
+                        <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_ND}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 0 2px 0; font-weight: 600; opacity: 0.9;">Loco (Ambil)</td>
+                        <td style="padding: 6px 15px 2px 0; text-align: right; opacity: 0.9;">${val_SelfPlan}</td>
+                        <td style="padding: 6px 0 2px 0; text-align: right; color: #fca5a5; font-weight:600;">${val_SelfReal}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        // 3. PROSES POSISI BERDAMPINGAN
+        const themeDarkBoxes = container.querySelectorAll('.theme-dark');
+        themeDarkBoxes.forEach(box => {
+            if(box.innerText.toUpperCase().includes('AMBIL SENDIRI')) {
+                ambilBox = box;
+            }
+        });
+
+        if (ambilBox) {
+            parentAmbil = ambilBox.parentNode;
+            
+            // Simpan properti asli
+            originalAmbilWidth = ambilBox.style.width;
+            originalAmbilFlex = ambilBox.style.flex;
+            originalAmbilHeight = ambilBox.style.height;
+
+            // Buat Wrapper Flex
+            flexWrapper = document.createElement('div');
+            flexWrapper.style.display = 'flex';
+            flexWrapper.style.gap = '15px';
+            flexWrapper.style.alignItems = 'stretch'; // INI KUNCINYA: Memaksa tinggi sama
+            flexWrapper.style.width = '100%'; 
+            flexWrapper.style.marginTop = '20px';
+
+            parentAmbil.insertBefore(flexWrapper, ambilBox);
+            
+            // ATUR AMBIL SENDIRI (KIRI)
+            ambilBox.style.width = targetWidthLeft; 
+            ambilBox.style.flex = 'none'; 
+            ambilBox.style.display = 'flex'; // Agar box meregang
+            ambilBox.style.flexDirection = 'column'; // Isi vertikal
+            flexWrapper.appendChild(ambilBox);
+
+            // ATUR REKAP TONASE (KANAN)
+            flexWrapper.appendChild(tempWrapper);
+
+        } else {
+            tempWrapper.style.width = '100%';
+            container.insertBefore(tempWrapper, container.firstChild);
+        }
     }
-    // -------------------------------------
 
+    // --- PROSES FOTO ---
     const originalShadow = container.style.boxShadow;
     const originalBg = container.style.background;
+    const originalPadding = container.style.padding;
     
     container.style.boxShadow = 'none';
-    container.style.padding = '40px'; 
+    container.style.padding = '30px'; 
     container.style.backgroundColor = '#ffffff';
 
     html2canvas(container, { scale: 3 }).then(canvas => { 
@@ -2737,26 +2817,35 @@ function exportGapImage() {
         link.href = canvas.toDataURL('image/jpeg', 1.0);
         link.click(); 
         
+        // --- RESTORE ---
         container.style.boxShadow = originalShadow;
         container.style.background = originalBg;
-        container.style.padding = '25px';
-        if (tempWrapper) container.removeChild(tempWrapper);
+        container.style.padding = originalPadding;
+        
+        if (flexWrapper && ambilBox) {
+            parentAmbil.insertBefore(ambilBox, flexWrapper);
+            ambilBox.style.width = originalAmbilWidth;
+            ambilBox.style.flex = originalAmbilFlex;
+            ambilBox.style.height = originalAmbilHeight;
+            ambilBox.style.display = ''; // Reset display
+            ambilBox.style.flexDirection = '';
+            parentAmbil.removeChild(flexWrapper);
+        } else if (tempWrapper && tempWrapper.parentNode) {
+            tempWrapper.parentNode.removeChild(tempWrapper);
+        }
     }); 
 }
 
 async function shareToWhatsApp(btnElement) {
-    // 1. Validasi Tanggal
+    // --- VALIDASI ---
     const dateVal = document.getElementById('analysis-date').value;
     if (!dateVal) { alert("Pilih tanggal analisa dulu!"); return; }
     
-    // Format Tanggal
     const dateObj = new Date(dateVal);
     const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const dateStr = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
 
-    // --- BAGIAN 1: AMBIL DATA UNTUK PESAN WHATSAPP (TRUCK UNIT) ---
-    
-    // Helper untuk ambil data dari baris TOTAL (baris terakhir di body tabel)
+    // Helper Caption
     const getTableVal = (tbodyId, colIndex) => {
         const tbody = document.getElementById(tbodyId);
         if(!tbody) return '0';
@@ -2766,122 +2855,164 @@ async function shareToWhatsApp(btnElement) {
         return cell ? cell.innerText.replace(/\n/g, '').trim() : '0'; 
     };
 
-    // Ambil Data Unit Truck
-    const p_plan = getTableVal('body-plan-today', 1); // Col 1 = Plan
-    const p_real = getTableVal('body-plan-today', 2); // Col 2 = Realz
-    const p_gap  = getTableVal('body-plan-today', 3); // Col 3 = Gap
+    const p_plan = getTableVal('body-plan-today', 1); const p_real = getTableVal('body-plan-today', 2); const p_gap  = getTableVal('body-plan-today', 3);
+    const n_plan = getTableVal('body-next-day', 1); const n_real = getTableVal('body-next-day', 2); const n_gap  = getTableVal('body-next-day', 3);
+    const t_plan = getTableVal('body-summary', 1); const t_real = getTableVal('body-summary', 2); const t_gap  = getTableVal('body-summary', 3);
 
-    const n_plan = getTableVal('body-next-day', 1);
-    const n_real = getTableVal('body-next-day', 2);
-    const n_gap  = getTableVal('body-next-day', 3);
+    let msg = `Dear All,\nSelamat Pagi\n\nBerikut Update Delivery Plan ${dateStr}\n\n`;
+    msg += `Planning,\nSampai Jam 17:00 : ${p_plan} Truck\nRealisasi : ${p_real} Truck\nGAP : ${p_gap} Truck\n\n`;
+    msg += `Next Day : ${n_plan} Truck\nRealisasi : ${n_real} Truck\nGAP : ${n_gap} Truck\n\n`;
+    msg += `-----\nTotal Plan & Next Day : ${t_plan} Truck\nRealisasi : ${t_real} Truck\nGAP : ${t_gap} Truck\n\nTerimakasih.`;
 
-    const t_plan = getTableVal('body-summary', 1);
-    const t_real = getTableVal('body-summary', 2);
-    const t_gap  = getTableVal('body-summary', 3);
-
-    // Susun Template Pesan Sesuai Request
-    let msg = `Dear All,\n`;
-    msg += `Selamat Pagi\n\n`;
-    msg += `Berikut Update Delivery Plan ${dateStr}\n\n`;
-
-    msg += `Planning,\n`;
-    msg += `Sampai Jam 17:00 : ${p_plan} Truck\n`;
-    msg += `Realisasi : ${p_real} Truck\n`;
-    msg += `GAP : ${p_gap} Truck\n\n`;
-
-    msg += `Next Day : ${n_plan} Truck\n`;
-    msg += `Realisasi : ${n_real} Truck\n`;
-    msg += `GAP : ${n_gap} Truck\n\n`;
-
-    msg += `-----\n`;
-    msg += `Total Plan & Next Day : ${t_plan} Truck\n`;
-    msg += `Realisasi : ${t_real} Truck\n`;
-    msg += `GAP : ${t_gap} Truck\n\n`;
-
-    msg += `Terimakasih.`;
-
-    // --- BAGIAN 2: LOGIKA GAMBAR (INJECT TONASE KE GAMBAR) ---
-    
+    // --- SETUP GAMBAR ---
     const container = document.getElementById('exportAreaContainer');
-    const statsSource = document.querySelector('.stats-header-group'); 
-    let tempWrapper = null; 
-    
-    // Simpan tombol loading state
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
     btnElement.disabled = true;
 
-    if (statsSource) {
-        // Buat Wrapper Utama
-        tempWrapper = document.createElement('div');
-        tempWrapper.id = 'temp-stats-injection';
-        
-        // Style agar Rata Kiri & Presisi
-        tempWrapper.style.backgroundColor = '#f8fafc';
-        tempWrapper.style.border = '1px solid #cbd5e1';
-        tempWrapper.style.borderRadius = '12px';
-        tempWrapper.style.padding = '20px';
-        tempWrapper.style.marginBottom = '25px';
-        tempWrapper.style.display = 'flex';
-        tempWrapper.style.flexDirection = 'column';
-        tempWrapper.style.alignItems = 'flex-start'; // RATA KIRI
-        tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
-        
-        // Buat Judul
-        const title = document.createElement('div');
-        title.innerHTML = '<i class="fa-solid fa-chart-simple"></i> REKAP TONASE (KG)';
-        title.style.width = '100%';
-        title.style.textAlign = 'left'; // RATA KIRI
-        title.style.color = '#334155';
-        title.style.fontWeight = '800';
-        title.style.fontSize = '0.9rem';
-        title.style.marginBottom = '15px';
-        title.style.paddingBottom = '10px';
-        title.style.borderBottom = '2px dashed #e2e8f0';
-        
-        // Clone Statistik
-        const statsClone = statsSource.cloneNode(true);
-        statsClone.style.margin = "0"; 
-        statsClone.style.width = "100%";
-        statsClone.style.display = "flex";
-        statsClone.style.justifyContent = "flex-start"; // RATA KIRI
-        statsClone.style.flexWrap = "wrap";
-        statsClone.style.gap = "12px";
+    const val_Reg = document.getElementById('box-plan-reg').innerText;
+    const val_ND = document.getElementById('box-plan-nd').innerText;
+    const val_Real = document.getElementById('box-act-total').innerText;
+    const val_SelfPlan = document.getElementById('box-plan-self').innerText;
+    const val_SelfReal = document.getElementById('box-act-self').innerText;
 
-        tempWrapper.appendChild(title);
-        tempWrapper.appendChild(statsClone);
+    // DOM VARS
+    let tempWrapper = null;
+    let ambilBox = null;
+    let flexWrapper = null;
+    let parentAmbil = null;
+    let originalAmbilWidth = '';
+    let originalAmbilFlex = '';
+    let originalAmbilHeight = '';
 
-        // Masukkan ke Container
+    // 1. DETEKSI UKURAN
+    const topTables = container.querySelectorAll('.gap-table-box');
+    let targetWidthLeft = '50%'; 
+    let targetWidthRight = '50%';
+
+    if (topTables.length >= 2) {
+        targetWidthLeft = topTables[0].offsetWidth + 'px';
+        targetWidthRight = topTables[1].offsetWidth + 'px';
+    } else if (topTables.length === 1) {
+        targetWidthLeft = topTables[0].offsetWidth + 'px';
+        targetWidthRight = targetWidthLeft;
+    }
+
+    // 2. WIDGET COMPACT
+    tempWrapper = document.createElement('div');
+    tempWrapper.style.boxSizing = 'border-box';
+    tempWrapper.style.backgroundColor = '#1e3a8a'; 
+    tempWrapper.style.borderRadius = '8px';
+    tempWrapper.style.padding = '10px 15px'; // Compact padding
+    tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    tempWrapper.style.border = '1px solid rgba(255,255,255,0.1)';
+    tempWrapper.style.color = '#ffffff';
+    tempWrapper.style.fontFamily = "'Inter', sans-serif";
+    tempWrapper.style.width = targetWidthRight;
+    tempWrapper.style.flex = 'none';
+    tempWrapper.style.display = 'flex';
+    tempWrapper.style.flexDirection = 'column';
+
+    tempWrapper.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 5px;">
+            <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">⚖️ REKAP TONASE (KG)</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.65rem; flex: 1;">
+            <thead>
+                <tr style="color: rgba(255,255,255,0.5);">
+                    <th style="text-align: left; padding: 2px 0; font-weight: 500;">KATEGORI</th>
+                    <th style="text-align: right; padding: 2px 15px 2px 0; font-weight: 500;">PLAN</th>
+                    <th style="text-align: right; padding: 2px 0; font-weight: 500;">REALISASI</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Franco (Reg)</td>
+                    <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_Reg}</td>
+                    <td rowspan="2" style="padding: 2px 0; text-align: right; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size: 0.8rem; font-weight: 700; color: #a5f3fc;">${val_Real}</span>
+                        <div style="font-size: 0.5rem; opacity: 0.6; line-height: 1;">(Total)</div>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Next Day</td>
+                    <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_ND}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 6px 0 2px 0; font-weight: 600; opacity: 0.9;">Loco (Ambil)</td>
+                    <td style="padding: 6px 15px 2px 0; text-align: right; opacity: 0.9;">${val_SelfPlan}</td>
+                    <td style="padding: 6px 0 2px 0; text-align: right; color: #fca5a5; font-weight:600;">${val_SelfReal}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
+    // 3. LAYOUTING
+    const themeDarkBoxes = container.querySelectorAll('.theme-dark');
+    themeDarkBoxes.forEach(box => {
+        if(box.innerText.toUpperCase().includes('AMBIL SENDIRI')) {
+            ambilBox = box;
+        }
+    });
+
+    if (ambilBox) {
+        parentAmbil = ambilBox.parentNode;
+        originalAmbilWidth = ambilBox.style.width;
+        originalAmbilFlex = ambilBox.style.flex;
+        originalAmbilHeight = ambilBox.style.height;
+
+        flexWrapper = document.createElement('div');
+        flexWrapper.style.display = 'flex';
+        flexWrapper.style.gap = '15px';
+        flexWrapper.style.alignItems = 'stretch';
+        flexWrapper.style.width = '100%';
+        flexWrapper.style.marginTop = '20px';
+
+        parentAmbil.insertBefore(flexWrapper, ambilBox);
+        
+        ambilBox.style.width = targetWidthLeft;
+        ambilBox.style.flex = 'none';
+        ambilBox.style.display = 'flex';
+        ambilBox.style.flexDirection = 'column';
+        flexWrapper.appendChild(ambilBox);
+        flexWrapper.appendChild(tempWrapper);
+    } else {
+        tempWrapper.style.width = '100%';
         container.insertBefore(tempWrapper, container.firstChild);
     }
 
     try {
         const originalShadow = container.style.boxShadow;
         const originalBg = container.style.background;
+        const originalPadding = container.style.padding;
         
-        // Set background putih mutlak saat difoto
         container.style.boxShadow = 'none';
         container.style.padding = '30px'; 
         container.style.backgroundColor = '#ffffff'; 
 
-        // AMBIL GAMBAR
         const canvas = await html2canvas(container, { scale: 2, useCORS: true });
         
-        // KEMBALIKAN STYLE SEPERTI SEMULA
         container.style.boxShadow = originalShadow;
         container.style.background = originalBg; 
-        container.style.padding = '25px';
+        container.style.padding = originalPadding;
         
-        // Hapus elemen temp
-        if (tempWrapper) container.removeChild(tempWrapper);
+        // RESTORE
+        if (flexWrapper && ambilBox) {
+            parentAmbil.insertBefore(ambilBox, flexWrapper);
+            ambilBox.style.width = originalAmbilWidth;
+            ambilBox.style.flex = originalAmbilFlex;
+            ambilBox.style.height = originalAmbilHeight;
+            ambilBox.style.display = '';
+            ambilBox.style.flexDirection = '';
+            parentAmbil.removeChild(flexWrapper);
+        } else if (tempWrapper && tempWrapper.parentNode) {
+            tempWrapper.parentNode.removeChild(tempWrapper);
+        }
 
         canvas.toBlob(async (blob) => {
-            const file = new File([blob], "Laporan_Logistik_Lengkap.png", { type: "image/png" });
-
-            // COPY TEXT KE CLIPBOARD
+            const file = new File([blob], "Laporan_Logistik.png", { type: "image/png" });
             try { await navigator.clipboard.writeText(msg); } catch (e) {}
 
-            // SHARE LOGIC
             if (navigator.share && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({ files: [file], title: 'Update Delivery', text: msg });
@@ -2900,13 +3031,15 @@ async function shareToWhatsApp(btnElement) {
 
     } catch (error) {
         console.error("Error:", error);
-        if (tempWrapper && container.contains(tempWrapper)) container.removeChild(tempWrapper);
+        // Emergency Restore
+        if (flexWrapper && ambilBox && parentAmbil) {
+             try { parentAmbil.insertBefore(ambilBox, flexWrapper); ambilBox.style.width = originalAmbilWidth; parentAmbil.removeChild(flexWrapper); } catch(e){}
+        }
         alert("Terjadi kesalahan sistem.");
         btnElement.innerHTML = originalText;
         btnElement.disabled = false;
     }
 }
-
         function exportToExcel() {
             const table = document.getElementById('dn-table-excel');
             const clone = table.cloneNode(true);
