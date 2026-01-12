@@ -2680,12 +2680,21 @@
 function exportGapImage() { 
     const container = document.getElementById('exportAreaContainer');
     
-    // --- AMBIL DATA ---
-    const val_Reg = document.getElementById('box-plan-reg').innerText;
-    const val_ND = document.getElementById('box-plan-nd').innerText;
-    const val_Real = document.getElementById('box-act-total').innerText;
-    const val_SelfPlan = document.getElementById('box-plan-self').innerText;
-    const val_SelfReal = document.getElementById('box-act-self').innerText;
+    // --- AMBIL DATA ANGKA (STRING) ---
+    const val_Reg = document.getElementById('box-plan-reg').innerText;      // Plan Franco
+    const val_ND = document.getElementById('box-plan-nd').innerText;        // Plan Next Day
+    const val_RealFranco = document.getElementById('box-act-total').innerText; // Realisasi Franco (incl ND)
+    const val_SelfPlan = document.getElementById('box-plan-self').innerText; // Plan Ambil Sendiri
+    const val_SelfReal = document.getElementById('box-act-self').innerText;  // Realisasi Ambil Sendiri
+
+    // --- HITUNG TOTAL REALISASI (Franco + NextDay + Ambil Sendiri) ---
+    // Helper untuk parsing angka "1.000" menjadi 1000
+    const parseNum = (str) => parseFloat(str.replace(/\./g, '').replace(/,/g, '.')) || 0;
+    const formatNum = (num) => Math.round(num).toLocaleString('id-ID');
+
+    // Total Realisasi = Realisasi Franco (yg sudah include ND) + Realisasi Ambil Sendiri
+    const totalRealization = parseNum(val_RealFranco) + parseNum(val_SelfReal);
+    const val_TotalRealDisplay = formatNum(totalRealization);
 
     // --- DOM VARS ---
     let tempWrapper = null;
@@ -2694,10 +2703,10 @@ function exportGapImage() {
     let parentAmbil = null;
     let originalAmbilWidth = ''; 
     let originalAmbilFlex = '';
-    let originalAmbilHeight = ''; // Simpan tinggi asli
+    let originalAmbilHeight = '';
 
     if (container) {
-        // 1. DETEKSI UKURAN TABEL ATAS
+        // 1. DETEKSI UKURAN TABEL ATAS (Agar Presisi)
         const topTables = container.querySelectorAll('.gap-table-box');
         let targetWidthLeft = '50%'; 
         let targetWidthRight = '50%';
@@ -2710,13 +2719,12 @@ function exportGapImage() {
             targetWidthRight = targetWidthLeft;
         }
 
-        // 2. BUAT WIDGET REKAP (LEBIH COMPACT AGAR TINGGI TIDAK JOMPLANG)
+        // 2. BUAT WIDGET REKAP (FORMAT BARU: HORIZONTAL)
         tempWrapper = document.createElement('div');
         tempWrapper.style.boxSizing = 'border-box';
-        tempWrapper.style.backgroundColor = '#1e3a8a'; 
+        tempWrapper.style.backgroundColor = '#1e3a8a'; // Tetap Biru Tua
         tempWrapper.style.borderRadius = '8px';
-        // Padding diperkecil agar tidak terlalu tinggi
-        tempWrapper.style.padding = '10px 15px'; 
+        tempWrapper.style.padding = '12px 15px';
         tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
         tempWrapper.style.border = '1px solid rgba(255,255,255,0.1)';
         tempWrapper.style.color = '#ffffff';
@@ -2725,42 +2733,35 @@ function exportGapImage() {
         tempWrapper.style.flex = 'none'; 
         tempWrapper.style.display = 'flex';
         tempWrapper.style.flexDirection = 'column';
+        tempWrapper.style.justifyContent = 'center'; // Center vertikal isi
 
+        // HTML FORMAT BARU (HORIZONTAL TABLE)
         tempWrapper.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 5px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
                 <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">⚖️ REKAP TONASE (KG)</span>
             </div>
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.65rem; flex: 1;">
+            
+            <table style="width: 100%; border-collapse: collapse; text-align: center; flex: 1;">
                 <thead>
-                    <tr style="color: rgba(255,255,255,0.5);">
-                        <th style="text-align: left; padding: 2px 0; font-weight: 500;">KATEGORI</th>
-                        <th style="text-align: right; padding: 2px 15px 2px 0; font-weight: 500;">PLAN</th>
-                        <th style="text-align: right; padding: 2px 0; font-weight: 500;">REALISASI</th>
+                    <tr>
+                        <th style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 500; padding-bottom: 4px;">Planning</th>
+                        <th style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 500; padding-bottom: 4px;">Nextday</th>
+                        <th style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 500; padding-bottom: 4px;">Ambil Sendiri</th>
+                        <th style="font-size: 0.6rem; color: #86efac; font-weight: 700; padding-bottom: 4px;">Realisasi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Franco (Reg)</td>
-                        <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_Reg}</td>
-                        <td rowspan="2" style="padding: 2px 0; text-align: right; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                            <span style="font-size: 0.8rem; font-weight: 700; color: #a5f3fc;">${val_Real}</span>
-                            <div style="font-size: 0.5rem; opacity: 0.6; line-height: 1;">(Total)</div>
-                        </td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
-                        <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Next Day</td>
-                        <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_ND}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 6px 0 2px 0; font-weight: 600; opacity: 0.9;">Loco (Ambil)</td>
-                        <td style="padding: 6px 15px 2px 0; text-align: right; opacity: 0.9;">${val_SelfPlan}</td>
-                        <td style="padding: 6px 0 2px 0; text-align: right; color: #fca5a5; font-weight:600;">${val_SelfReal}</td>
+                        <td style="font-size: 0.9rem; font-weight: 700; color: white; padding-top: 2px;">${val_Reg}</td>
+                        <td style="font-size: 0.9rem; font-weight: 700; color: white; padding-top: 2px;">${val_ND}</td>
+                        <td style="font-size: 0.9rem; font-weight: 700; color: white; padding-top: 2px;">${val_SelfPlan}</td>
+                        <td style="font-size: 1.2rem; font-weight: 800; color: #86efac; padding-top: 2px;">${val_TotalRealDisplay}</td>
                     </tr>
                 </tbody>
             </table>
         `;
 
-        // 3. PROSES POSISI BERDAMPINGAN
+        // 3. LAYOUTING (BERDAMPINGAN DENGAN STRETCH)
         const themeDarkBoxes = container.querySelectorAll('.theme-dark');
         themeDarkBoxes.forEach(box => {
             if(box.innerText.toUpperCase().includes('AMBIL SENDIRI')) {
@@ -2771,7 +2772,7 @@ function exportGapImage() {
         if (ambilBox) {
             parentAmbil = ambilBox.parentNode;
             
-            // Simpan properti asli
+            // Simpan style asli
             originalAmbilWidth = ambilBox.style.width;
             originalAmbilFlex = ambilBox.style.flex;
             originalAmbilHeight = ambilBox.style.height;
@@ -2780,23 +2781,24 @@ function exportGapImage() {
             flexWrapper = document.createElement('div');
             flexWrapper.style.display = 'flex';
             flexWrapper.style.gap = '15px';
-            flexWrapper.style.alignItems = 'stretch'; // INI KUNCINYA: Memaksa tinggi sama
+            flexWrapper.style.alignItems = 'stretch'; // Pastikan tinggi sama
             flexWrapper.style.width = '100%'; 
             flexWrapper.style.marginTop = '20px';
 
             parentAmbil.insertBefore(flexWrapper, ambilBox);
             
-            // ATUR AMBIL SENDIRI (KIRI)
+            // Atur Ambil Sendiri (KIRI)
             ambilBox.style.width = targetWidthLeft; 
             ambilBox.style.flex = 'none'; 
-            ambilBox.style.display = 'flex'; // Agar box meregang
-            ambilBox.style.flexDirection = 'column'; // Isi vertikal
+            ambilBox.style.display = 'flex'; 
+            ambilBox.style.flexDirection = 'column'; 
             flexWrapper.appendChild(ambilBox);
 
-            // ATUR REKAP TONASE (KANAN)
+            // Atur Rekap Tonase (KANAN)
             flexWrapper.appendChild(tempWrapper);
 
         } else {
+            // Fallback jika tidak ada tabel ambil sendiri
             tempWrapper.style.width = '100%';
             container.insertBefore(tempWrapper, container.firstChild);
         }
@@ -2827,7 +2829,7 @@ function exportGapImage() {
             ambilBox.style.width = originalAmbilWidth;
             ambilBox.style.flex = originalAmbilFlex;
             ambilBox.style.height = originalAmbilHeight;
-            ambilBox.style.display = ''; // Reset display
+            ambilBox.style.display = '';
             ambilBox.style.flexDirection = '';
             parentAmbil.removeChild(flexWrapper);
         } else if (tempWrapper && tempWrapper.parentNode) {
@@ -2870,11 +2872,18 @@ async function shareToWhatsApp(btnElement) {
     btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Proses...';
     btnElement.disabled = true;
 
+    // --- AMBIL DATA ANGKA ---
     const val_Reg = document.getElementById('box-plan-reg').innerText;
     const val_ND = document.getElementById('box-plan-nd').innerText;
-    const val_Real = document.getElementById('box-act-total').innerText;
+    const val_RealFranco = document.getElementById('box-act-total').innerText;
     const val_SelfPlan = document.getElementById('box-plan-self').innerText;
     const val_SelfReal = document.getElementById('box-act-self').innerText;
+
+    // Hitung Total Realisasi (Franco + ND + Loco)
+    const parseNum = (str) => parseFloat(str.replace(/\./g, '').replace(/,/g, '.')) || 0;
+    const formatNum = (num) => Math.round(num).toLocaleString('id-ID');
+    const totalRealization = parseNum(val_RealFranco) + parseNum(val_SelfReal);
+    const val_TotalRealDisplay = formatNum(totalRealization);
 
     // DOM VARS
     let tempWrapper = null;
@@ -2898,12 +2907,12 @@ async function shareToWhatsApp(btnElement) {
         targetWidthRight = targetWidthLeft;
     }
 
-    // 2. WIDGET COMPACT
+    // 2. WIDGET COMPACT (FORMAT HORIZONTAL BARU)
     tempWrapper = document.createElement('div');
     tempWrapper.style.boxSizing = 'border-box';
     tempWrapper.style.backgroundColor = '#1e3a8a'; 
     tempWrapper.style.borderRadius = '8px';
-    tempWrapper.style.padding = '10px 15px'; // Compact padding
+    tempWrapper.style.padding = '12px 15px'; 
     tempWrapper.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
     tempWrapper.style.border = '1px solid rgba(255,255,255,0.1)';
     tempWrapper.style.color = '#ffffff';
@@ -2912,36 +2921,28 @@ async function shareToWhatsApp(btnElement) {
     tempWrapper.style.flex = 'none';
     tempWrapper.style.display = 'flex';
     tempWrapper.style.flexDirection = 'column';
+    tempWrapper.style.justifyContent = 'center';
 
     tempWrapper.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 5px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
             <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">⚖️ REKAP TONASE (KG)</span>
         </div>
-        <table style="width: 100%; border-collapse: collapse; font-size: 0.65rem; flex: 1;">
+        
+        <table style="width: 100%; border-collapse: collapse; text-align: center; flex: 1;">
             <thead>
-                <tr style="color: rgba(255,255,255,0.5);">
-                    <th style="text-align: left; padding: 2px 0; font-weight: 500;">KATEGORI</th>
-                    <th style="text-align: right; padding: 2px 15px 2px 0; font-weight: 500;">PLAN</th>
-                    <th style="text-align: right; padding: 2px 0; font-weight: 500;">REALISASI</th>
+                <tr>
+                    <th style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 500; padding-bottom: 4px;">Planning</th>
+                    <th style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 500; padding-bottom: 4px;">Nextday</th>
+                    <th style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 500; padding-bottom: 4px;">Ambil Sendiri</th>
+                    <th style="font-size: 0.6rem; color: #86efac; font-weight: 700; padding-bottom: 4px;">Realisasi</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Franco (Reg)</td>
-                    <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_Reg}</td>
-                    <td rowspan="2" style="padding: 2px 0; text-align: right; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                        <span style="font-size: 0.8rem; font-weight: 700; color: #a5f3fc;">${val_Real}</span>
-                        <div style="font-size: 0.5rem; opacity: 0.6; line-height: 1;">(Total)</div>
-                    </td>
-                </tr>
-                <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
-                    <td style="padding: 2px 0; font-weight: 600; opacity: 0.9;">Next Day</td>
-                    <td style="padding: 2px 15px 2px 0; text-align: right; opacity: 0.9;">${val_ND}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0 2px 0; font-weight: 600; opacity: 0.9;">Loco (Ambil)</td>
-                    <td style="padding: 6px 15px 2px 0; text-align: right; opacity: 0.9;">${val_SelfPlan}</td>
-                    <td style="padding: 6px 0 2px 0; text-align: right; color: #fca5a5; font-weight:600;">${val_SelfReal}</td>
+                    <td style="font-size: 0.9rem; font-weight: 700; color: white; padding-top: 2px;">${val_Reg}</td>
+                    <td style="font-size: 0.9rem; font-weight: 700; color: white; padding-top: 2px;">${val_ND}</td>
+                    <td style="font-size: 0.9rem; font-weight: 700; color: white; padding-top: 2px;">${val_SelfPlan}</td>
+                    <td style="font-size: 1.2rem; font-weight: 800; color: #86efac; padding-top: 2px;">${val_TotalRealDisplay}</td>
                 </tr>
             </tbody>
         </table>
